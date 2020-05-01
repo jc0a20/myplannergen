@@ -28,10 +28,9 @@ SVGのテンプレートファイルとCSVのコンテンツファイルを使�
 |  手帳用PDF(1ページ1ファイル)  |  [export_pdf/](export_pdf)  |
 |  手帳用PDF(結合済)  |  [doc/combined_pdf.pdf](doc/combined_pdf.pdf)  |
 
-planner_svg_gen.pyは Python 3.6.8 で動作確認しました。なお，標準ライブラリのみで作成しています。
-
-svg2pdf.batはwindows10で動作確認しました。
-
+## Requirement
+* planner_svg_gen.py: Python3 (3.6.8 でのみ動作確認)
+* svg2pdf.bat: Win10 & Inkscape
 
 ## 次の目標
 * Python実行，バッチファイル実行，PDF結合をいちいちやらなくても良い様にする
