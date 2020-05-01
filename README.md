@@ -58,7 +58,7 @@ Pythonスクリプトは，このIDを用いてSVG内の文字の置換をして
 <img width="600" src="./doc/05.jpg">
 
 ## License
-本ソフトウェアは[MITライセンス](./LICENSE.txt)の元提供されています。
+本ソフトウェアは[MITライセンス](./LICENSE)の元提供されています。
 
 ## Acknowledgments
 SVGをPDFに変換するバッチファイルについて，以下のサイトを参考にしました。
