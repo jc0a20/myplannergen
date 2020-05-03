@@ -1,7 +1,12 @@
+import configparser
 import os
 import re
 import subprocess
 import sys
+
+config = configparser.ConfigParser()
+config.read('config.ini', encoding='utf-8')
+INKSCAPE_PATH = config['DEFAULT']['InkscapePath']
 
 def replace_text(target_doc, target_str, replace_str, id_str):
     pattern = '''id="''' + id_str + '''".+?>''' + target_str + '''<.+?</text>'''
@@ -271,12 +276,11 @@ for iii in zip([1, 2, 3, 4, 5, 6, 7, -1, 0, 12, 11, 10, 9, 8], [0, 12, 11, 10, 9
     with open(write_svg_filename, mode='w', encoding='utf-8') as f:
         f.write(target_doc_new)
 
-INKSCAPE_PATH = '''"C:\Program Files\Inkscape\\inkscape.com"'''
 for fnamei in sorted(write_svg_filename_list):
     basename_without_ext = os.path.splitext(os.path.basename(fnamei))[0]
     export_pdf_filename = ".\\export_pdf\\{0}.pdf".format(basename_without_ext)
     print(fnamei,'->',export_pdf_filename)
-    cmd = '''{0} -f {1} -A {2}'''.format(INKSCAPE_PATH,fnamei,export_pdf_filename)
+    cmd = '''"{0}" -f {1} -A {2}'''.format(INKSCAPE_PATH,fnamei,export_pdf_filename)
     e = subprocess.call(cmd, shell=True)
 
 sys.exit(0)
