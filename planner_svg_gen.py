@@ -4,6 +4,8 @@ import re
 import subprocess
 import sys
 
+import PyPDF2
+
 config = configparser.ConfigParser()
 config.read('config.ini', encoding='utf-8')
 INKSCAPE_PATH = config['DEFAULT']['InkscapePath']
@@ -123,7 +125,7 @@ export_dir_str = "./export_svg/"
 
 write_svg_filename_list = []
 for iii in zip([1, 2, 3, 4, 5, 6, 7, -1, 0, 12, 11, 10, 9, 8], [0, 12, 11, 10, 9, 8, 7, -1, 1, 2, 3, 4, 5, 6],
-               ["2", "4", "6", "8", "10", "12", "14", "1", "3", "5", "7", "9", "11", "13"]):
+               ["002", "004", "006", "008", "010", "012", "014", "001", "003", "005", "007", "009", "011", "013"]):
 
     # 断ち切り線ページ #
     if iii[0] == -1 and iii[1] == -1:
@@ -276,11 +278,20 @@ for iii in zip([1, 2, 3, 4, 5, 6, 7, -1, 0, 12, 11, 10, 9, 8], [0, 12, 11, 10, 9
     with open(write_svg_filename, mode='w', encoding='utf-8') as f:
         f.write(target_doc_new)
 
+write_pdf_filename_list = []
 for fnamei in sorted(write_svg_filename_list):
     basename_without_ext = os.path.splitext(os.path.basename(fnamei))[0]
     export_pdf_filename = ".\\export_pdf\\{0}.pdf".format(basename_without_ext)
+    write_pdf_filename_list.append(export_pdf_filename)
     print(fnamei,'->',export_pdf_filename)
     cmd = '''"{0}" -f {1} -A {2}'''.format(INKSCAPE_PATH,fnamei,export_pdf_filename)
     e = subprocess.call(cmd, shell=True)
+
+
+merger = PyPDF2.PdfFileMerger()
+for a_pdf_filename in write_pdf_filename_list:
+    merger.append(a_pdf_filename)
+merger.write('./output.pdf')
+merger.close()
 
 sys.exit(0)
