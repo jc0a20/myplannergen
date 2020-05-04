@@ -1,4 +1,14 @@
+import configparser
+import os
 import re
+import subprocess
+import sys
+
+import PyPDF2
+
+config = configparser.ConfigParser()
+config.read('config.ini', encoding='utf-8')
+INKSCAPE_PATH = config['DEFAULT']['InkscapePath']
 
 def replace_text(target_doc, target_str, replace_str, id_str):
     pattern = '''id="''' + id_str + '''".+?>''' + target_str + '''<.+?</text>'''
@@ -112,13 +122,17 @@ export_dir_str = "./export_svg/"
 
 #["p1o", "p2o", "p3o", "p4o", "p5o", "p6o", "p7o", "p1u", "p2u", "p3u", "p4u", "p5u", "p6u", "p7u"]
 
+
+write_svg_filename_list = []
 for iii in zip([1, 2, 3, 4, 5, 6, 7, -1, 0, 12, 11, 10, 9, 8], [0, 12, 11, 10, 9, 8, 7, -1, 1, 2, 3, 4, 5, 6],
-               ["2", "4", "6", "8", "10", "12", "14", "1", "3", "5", "7", "9", "11", "13"]):
+               ["002", "004", "006", "008", "010", "012", "014", "001", "003", "005", "007", "009", "011", "013"]):
 
     # 断ち切り線ページ #
     if iii[0] == -1 and iii[1] == -1:
         target_doc_new = target_doc_cutline
-        with open(export_dir_str + iii[2] + ".svg", mode='w', encoding='utf-8') as f:
+        write_svg_filename = export_dir_str + iii[2] + ".svg"
+        write_svg_filename_list.append(write_svg_filename)
+        with open(write_svg_filename, mode='w', encoding='utf-8') as f:
             f.write(target_doc_new)
         continue
     else:
@@ -259,5 +273,25 @@ for iii in zip([1, 2, 3, 4, 5, 6, 7, -1, 0, 12, 11, 10, 9, 8], [0, 12, 11, 10, 9
             id_str, replace_rgb = "day_rect_" + day_str + "R", "CCCCCC"
             target_doc_new = replace_color(target_doc_new, replace_rgb, id_str)
 
-    with open(export_dir_str + iii[2] + ".svg", mode='w', encoding='utf-8') as f:
+    write_svg_filename = export_dir_str + iii[2] + ".svg"
+    write_svg_filename_list.append(write_svg_filename)
+    with open(write_svg_filename, mode='w', encoding='utf-8') as f:
         f.write(target_doc_new)
+
+write_pdf_filename_list = []
+for fnamei in sorted(write_svg_filename_list):
+    basename_without_ext = os.path.splitext(os.path.basename(fnamei))[0]
+    export_pdf_filename = ".\\export_pdf\\{0}.pdf".format(basename_without_ext)
+    write_pdf_filename_list.append(export_pdf_filename)
+    print(fnamei,'->',export_pdf_filename)
+    cmd = '''"{0}" -f {1} -A {2}'''.format(INKSCAPE_PATH,fnamei,export_pdf_filename)
+    e = subprocess.call(cmd, shell=True)
+
+
+merger = PyPDF2.PdfFileMerger()
+for a_pdf_filename in write_pdf_filename_list:
+    merger.append(a_pdf_filename)
+merger.write('./output.pdf')
+merger.close()
+
+sys.exit(0)
